@@ -1,123 +1,112 @@
-Task Executor Management System: Kubernetes Deployment (Task 3)
+#  Task Executor Management System: Kubernetes Deployment (Task 3)
 
-Project Overview
+##  Project Overview
 
-This repository contains the complete full-stack application, which includes the Spring Boot Task Executor API and the React/TypeScript Frontend. This stage focuses on deploying the entire system securely and scalably onto a Kubernetes (K8s) Cluster.
+This repository contains the **complete full-stack Task Executor Management System**, featuring:
 
-The advanced requirement for this task is implemented by integrating the Java Backend with the Kubernetes Client Library (client-java) to execute commands inside dedicated, ephemeral Pods. This provides complete isolation and enhanced security over local shell execution.
+- **Backend:** Spring Boot 3 / Java 21  
+- **Frontend:** React / TypeScript  
+- **Database:** MongoDB 6.0  
+- **Deployment Environment:** Kubernetes (K8s)
 
-Architecture Deployed to Kubernetes
+This phase focuses on **secure and scalable deployment** of the entire system onto a **Kubernetes Cluster**, ensuring high availability, modularity, and security.
 
-The deployment utilizes declarative YAML manifests to manage the application and its persistence.
+An advanced implementation integrates the **Java Backend** with the **Kubernetes Client Library (`client-java`)**, enabling **ephemeral Pod-based command execution** — providing complete isolation and enhanced security compared to traditional local shell execution.
 
-Component
+---
 
-Technology
+##  Architecture Deployed to Kubernetes
 
-K8s Resource
+| Component         | Technology              | K8s Resource                              | External Access                  |
+|-------------------|--------------------------|--------------------------------------------|----------------------------------|
+| **Database**      | MongoDB 6.0              | Deployment, Service (ClusterIP), PVC       | Internal Only (`mongodb-service:27017`) |
+| **Backend API**   | Spring Boot 3 / Java 21  | Deployment, Service (NodePort)             | NodePort **30080** (External)    |
+| **Execution Engine** | BusyBox               | Ephemeral Pod (Managed via CoreV1Api)      | Internal (API-triggered)         |
 
-External Access
+---
 
-Database
+##  Deployment Instructions
 
-MongoDB 6.0
+###  Prerequisites
 
-Deployment, Service (ClusterIP), PVC
+- **Kubernetes Cluster** — (e.g., Minikube, GKE, or EKS)
+- **kubectl** — configured to communicate with the cluster
+- **Docker Image** — build and push the Spring Boot app image (e.g., `task-executor-app:latest`)  
+  *(Refer to the `Dockerfile` for build instructions.)*
 
-Internal Only (mongodb-service:27017)
+---
 
-Backend API
+##  YAML Manifests
 
-Spring Boot 3 / Java 21
+The deployment uses two primary manifests:
 
-Deployment, Service (NodePort)
+1. **`mongodb-deployment.yaml`**  
+   - Defines MongoDB Deployment  
+   - Includes ClusterIP Service and PersistentVolumeClaim (PVC)
 
-NodePort 30080 (External)
+2. **`app-deployment.yaml`**  
+   - Defines the Spring Boot Task Executor API Deployment  
+   - Includes environment variables for MongoDB connection  
+   - Exposes the service via NodePort **30080**
 
-Execution Engine
+---
 
-BusyBox
+##  Execution Steps
 
-Pod (Ephemeral)
-
-Managed via CoreV1Api
-
-🚀 Deployment Instructions
-
-Prerequisites
-
-Kubernetes Cluster: A running cluster (e.g., Minikube, GKE, EKS).
-
-kubectl: Configured to communicate with the cluster.
-
-Docker Image: The Spring Boot application must be built into a Docker image (e.g., task-executor-app:latest) and accessible by the cluster nodes. (Refer to the Dockerfile for build details.)
-
-YAML Manifests
-
-The deployment relies on the following two primary manifests:
-
-mongodb-deployment.yaml: Defines the MongoDB Deployment, its internal ClusterIP Service, and the PersistentVolumeClaim (PVC).
-
-app-deployment.yaml: Defines the Task Executor API Deployment, including environment variables to connect to MongoDB, and the external NodePort Service.
-
-Execution Steps
-
-Deploy MongoDB:
-Deploys the database with persistence and an internal ClusterIP for the API to connect to.
-
+###  Deploy MongoDB
+```bash
 kubectl apply -f mongodb-deployment.yaml
-
-
-Deploy Backend API:
-Deploys the Java API, automatically connecting it to the database using the service name mongodb-service.
-
+```
+Deploys the MongoDB database with persistence and internal ClusterIP service.
+### Deploy Backend API 
+```bash
 kubectl apply -f app-deployment.yaml
-
-
-Verify Deployment:
-Confirm that both the database and the API pods are running.
-
+```
+Deploys the Task Executor API connected to MongoDB using the service name mongodb-service.
+### Verify Deployment
+```bash
 kubectl get pods
 kubectl get svc
+```
+Ensure both database and API pods are running successfully.
 
-
-Accessing the API
-
-The task-executor-service is exposed on every node in the cluster via NodePort 30080.
-
-# Example for Minikube
+#### Accessing the API
+The API is exposed via NodePort 30080 across all cluster nodes.
+### Example for Minikube:
+```base
 minikube service task-executor-service --url
 
-# General K8s access URL format
+```
+### General Access Format:
+```base
 http://<NODE_IP>:30080/tasks
+```
+#### Advanced Feature: Isolated Command Execution
+The core enhancement in this task is isolated command execution within ephemeral Kubernetes Pods, providing a secure alternative to executing shell commands on the host system
+### Implementation Details
+Component / Feature	Description
+K8s Client	Uses io.kubernetes:client-java dependency (refer to pom.xml)
+Execution Flow	TaskServiceImpl.executeTask(id) creates an ephemeral Pod using CoreV1Api.createNamespacedPod()
+Pod Configuration	Uses busybox image — executes the provided command in the container via command and args fields
+Cleanup Process	After Pod reaches Succeeded or Failed, logs are retrieved and Pod is deleted using deleteNamespacedPod()
+Security Advantage	Prevents command injection and ensures tasks run in isolated, non-privileged environments
+
+### Key Technologies Used
+
+-Java 21 / Spring Boot 3
+
+-MongoDB 6.0
+
+-React + TypeScript
 
 
-Advanced Requirement: Isolated Command Execution
 
-The core feature of this task is shifting command execution from the local shell of the API server to a dedicated, throwaway Kubernetes Pod.
+Kubernetes
 
-Implementation Details
+Kubernetes Java Client (client-java)
 
-Component/Feature
 
-Implementation Detail
 
-K8s Client
 
-Uses the io.kubernetes:client-java dependency (as seen in pom.xml).
 
-Execution Flow
 
-The TaskServiceImpl.executeTask(id) method no longer uses Runtime.getRuntime().exec(). Instead, it calls CoreV1Api.createNamespacedPod().
-
-Pod Configuration
-
-A new ephemeral Pod is created using the busybox image. The command from the Task is passed directly to this Pod's container using the command and args fields in the Pod specification.
-
-Cleanup
-
-After the Pod status reaches Succeeded or Failed, the Pod's logs are retrieved, and the Pod is immediately deleted via k8sApi.deleteNamespacedPod().
-
-Security
-
-This design inherently prevents Command Injection on the API server's host OS, as the command is executed in an isolated, non-privileged container environment.
