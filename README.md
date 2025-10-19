@@ -31,8 +31,7 @@ An advanced implementation integrates the **Java Backend** with the **Kubernetes
 
 - **Kubernetes Cluster** — (e.g., Minikube, GKE, or EKS)
 - **kubectl** — configured to communicate with the cluster
-- **Docker Image** — build and push the Spring Boot app image (e.g., `task-executor-app:latest`)  
-  *(Refer to the `Dockerfile` for build instructions.)*
+
 
 ---
 
