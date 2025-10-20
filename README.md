@@ -1,111 +1,82 @@
-#  Task Executor Management System: Kubernetes Deployment (Task 3)
+#  Task Executor Management System: Web UI Frontend (Task 3)
 
 ##  Project Overview
 
-This repository contains the **complete full-stack Task Executor Management System**, featuring:
+This document details the **Web UI Frontend** developed using **React 19** and **TypeScript**.  
+This application serves as the **user interface** for the **Task Executor Management System**, enabling users to **securely manage and execute shell commands** through the corresponding **RESTful API**.
 
-- **Backend:** Spring Boot 3 / Java 21  
-- **Frontend:** React / TypeScript  
-- **Database:** MongoDB 6.0  
-- **Deployment Environment:** Kubernetes (K8s)
-
-This phase focuses on **secure and scalable deployment** of the entire system onto a **Kubernetes Cluster**, ensuring high availability, modularity, and security.
-
-An advanced implementation integrates the **Java Backend** with the **Kubernetes Client Library (`client-java`)**, enabling **ephemeral Pod-based command execution** — providing complete isolation and enhanced security compared to traditional local shell execution.
+The entire UI is built using **Ant Design** components to ensure **high usability**, **accessibility**, and a **modern, responsive design** across all devices.
 
 ---
 
-##  Architecture Deployed to Kubernetes
+## Technology Stack
 
-| Component         | Technology              | K8s Resource                              | External Access                  |
-|-------------------|--------------------------|--------------------------------------------|----------------------------------|
-| **Database**      | MongoDB 6.0              | Deployment, Service (ClusterIP), PVC       | Internal Only (`mongodb-service:27017`) |
-| **Backend API**   | Spring Boot 3 / Java 21  | Deployment, Service (NodePort)             | NodePort **30080** (External)    |
-| **Execution Engine** | BusyBox               | Ephemeral Pod (Managed via CoreV1Api)      | Internal (API-triggered)         |
+| Component | Technology | Description |
+|------------|-------------|-------------|
+| **Framework** | React 19, TypeScript | Utilized for a robust, maintainable, and type-safe component architecture. |
+| **UI Library** | Ant Design (AntD) | Provided a comprehensive set of professional and accessible UI components (Tables, Modals, Forms). |
+| **Styling** | Custom CSS / Tailwind (Implicit) | Ensured full responsiveness and an intuitive layout. |
+| **Data Source** | Spring Boot API (Task 1) | Consumed REST endpoints on `http://localhost:8080` for all CRUD and execution requests. |
 
 ---
 
-##  Deployment Instructions
+##  Web UI Forms and Core Features (Task 3)
+
+The interface is structured around a **Task Management Dashboard** that provides full administrative control over stored commands.
+
+###  Intuitive Dashboard
+A single, responsive screen built using **Ant Design’s Table component** for seamless viewing of all tasks.
+
+###  Complete Task Lifecycle (CRUD)
+- **Create/Edit Forms:**  
+  Uses accessible Ant Design **Modal** and **Form** components to capture and validate Task details (Name, Owner, Command).  
+- **Search Functionality:**  
+  Integrated search bar for quick, case-insensitive filtering of tasks by name.  
+- **Secure Execution:**  
+  A dedicated **Execute** button in the table row triggers the backend execution endpoint with one click.  
+- **Execution History & Output Viewer:**  
+  Implements a detailed **Modal view** to display execution history for any task.  
+  Shows **start time**, **end time**, and captured **stdout/stderr** for post-execution review.
+
+---
+
+##  Frontend Setup
+
+Follow these steps to run the Web UI locally.
+
+> **Note:** The Spring Boot API (Task 1) must be running and accessible at `http://localhost:8080`.
 
 ###  Prerequisites
+- Node.js  
+- npm or Yarn  
 
-- **Kubernetes Cluster** — (e.g., Minikube, GKE, or EKS)
-- **kubectl** — configured to communicate with the cluster
+###  Install Dependencies
+Navigate to the frontend directory and install required packages:
 
-
----
-
-##  YAML Manifests
-
-The deployment uses two primary manifests:
-
-1. **`mongodb-deployment.yaml`**  
-   - Defines MongoDB Deployment  
-   - Includes ClusterIP Service and PersistentVolumeClaim (PVC)
-
-2. **`app-deployment.yaml`**  
-   - Defines the Spring Boot Task Executor API Deployment  
-   - Includes environment variables for MongoDB connection  
-   - Exposes the service via NodePort **30080**
-
----
-
-##  Execution Steps
-
-###  Deploy MongoDB
 ```bash
-kubectl apply -f mongodb-deployment.yaml
+cd [frontend-directory]
+npm install
 ```
-Deploys the MongoDB database with persistence and internal ClusterIP service.
-### Deploy Backend API 
+### Run Application
+Start the Reack development server:
 ```bash
-kubectl apply -f app-deployment.yaml
+npm start
 ```
-Deploys the Task Executor API connected to MongoDB using the service name mongodb-service.
-### Verify Deployment
-```bash
-kubectl get pods
-kubectl get svc
-```
-Ensure both database and API pods are running successfully.
+This application will typically open in your browser at:
+http://localhost:5173/
 
-#### Accessing the API
-The API is exposed via NodePort 30080 across all cluster nodes.
-### Example for Minikube:
-```base
-minikube service task-executor-service --url
+#### Output
 
-```
-### General Access Format:
-```base
-http://<NODE_IP>:30080/tasks
-```
-#### Advanced Feature: Isolated Command Execution
-The core enhancement in this task is isolated command execution within ephemeral Kubernetes Pods, providing a secure alternative to executing shell commands on the host system
-### Implementation Details
-Component / Feature	Description
-K8s Client	Uses io.kubernetes:client-java dependency (refer to pom.xml)
-Execution Flow	TaskServiceImpl.executeTask(id) creates an ephemeral Pod using CoreV1Api.createNamespacedPod()
-Pod Configuration	Uses busybox image — executes the provided command in the container via command and args fields
-Cleanup Process	After Pod reaches Succeeded or Failed, logs are retrieved and Pod is deleted using deleteNamespacedPod()
-Security Advantage	Prevents command injection and ensures tasks run in isolated, non-privileged environments
+1)Task Creation/Edit form
 
-### Key Technologies Used
+<img width="1746" height="889" alt="image" src="https://github.com/user-attachments/assets/a679f7e5-0e01-4d8c-be3f-7b812ab2b50b" />
 
--Java 21 / Spring Boot 3
+2)Task Management Dashboard(List and search)
 
--MongoDB 6.0
+<img width="1919" height="921" alt="image" src="https://github.com/user-attachments/assets/e8adf142-6b11-49cf-a115-3faa0ced119e" />
 
--React + TypeScript
+3)Command Execution and Output View
 
-
-
-Kubernetes
-
-Kubernetes Java Client (client-java)
-
-
-
-
+<img width="1752" height="887" alt="image" src="https://github.com/user-attachments/assets/fbe3b892-f7e9-4967-a538-12da1286f45e" />
 
 
