@@ -92,7 +92,8 @@ http://localhost:5173/
 <img width="1846" height="889" alt="image" src="https://github.com/user-attachments/assets/6a937c67-94ce-48d9-aceb-560f872913f0" />
 
 8)Delete
-<img width="1737" height="892" alt="image" src="https://github.com/user-attachments/assets/e863b01d-c53e-4974-a89e-904f7a9fba8f" />
+<img width="1854" height="888" alt="image" src="https://github.com/user-attachments/assets/afd4e51b-543b-49a7-8c85-48e55fb942f7" />
+
 
 
 
