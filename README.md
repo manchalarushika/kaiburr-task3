@@ -79,4 +79,24 @@ http://localhost:5173/
 
 <img width="1752" height="887" alt="image" src="https://github.com/user-attachments/assets/fbe3b892-f7e9-4967-a538-12da1286f45e" />
 
+4)searching the ID by using the search bar
+<img width="1838" height="884" alt="image" src="https://github.com/user-attachments/assets/ad425e0d-bc44-43b7-8395-8be2a31131ca" />
+
+5)ID found
+<img width="1844" height="886" alt="image" src="https://github.com/user-attachments/assets/55e8d11b-5ab2-4c61-bd2d-ea1c7b33e34e" />
+
+6)Searching the text name by using the search bar
+<img width="1863" height="887" alt="image" src="https://github.com/user-attachments/assets/44d1332a-e35e-4152-ad4f-012f5910160c" />
+
+7)Text name found
+<img width="1846" height="889" alt="image" src="https://github.com/user-attachments/assets/6a937c67-94ce-48d9-aceb-560f872913f0" />
+
+8)Delete
+<img width="1737" height="892" alt="image" src="https://github.com/user-attachments/assets/e863b01d-c53e-4974-a89e-904f7a9fba8f" />
+
+
+
+
+
+
 
